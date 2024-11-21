@@ -1,0 +1,14 @@
+# Exclure l'environnement virtuel
+env/
+
+# Exclure les fichiers de cache Python
+__pycache__/
+
+# Exclure les fichiers CSV ou autres fichiers générés
+*.csv
+
+# Exclure les fichiers de logs
+*.log
+
+# Exclure les fichiers de configuration spécifiques à l'IDE
+.vscode/
