@@ -11,6 +11,7 @@ import time
 import requests
 from concurrent.futures import ThreadPoolExecutor
 
+
 #%% Aller sur Amazon et chercher le mot clés voulu et on récupère le code entier de la page
 def scrap(mot_cles):
     # Configurer les options de Chrome
@@ -19,6 +20,9 @@ def scrap(mot_cles):
     chrome_options.add_argument("--disable-gpu")  # Nécessaire pour certains environnements
     chrome_options.add_argument("--no-sandbox")  # Pour les environnements restreints
     chrome_options.add_argument("--disable-dev-shm-usage")  # Empêche les problèmes de mémoire partagée
+    
+    import chromedriver_autoinstaller
+    chromedriver_autoinstaller.install()
 
     # Initialiser le driver avec les options configurées
     driver = webdriver.Chrome(options=chrome_options)
