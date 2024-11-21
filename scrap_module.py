@@ -21,9 +21,9 @@ def scrap(mot_cles):
     chrome_options.add_argument("--no-sandbox")  # Pour les environnements restreints
     chrome_options.add_argument("--disable-dev-shm-usage")  # Empêche les problèmes de mémoire partagée
     
-    import chromedriver_autoinstaller
-    chromedriver_autoinstaller.install()
-
+    # Spécifier l'emplacement de Chromium
+    chrome_options.binary_location = '/usr/bin/chromium-browser'
+    
     # Initialiser le driver avec les options configurées
     driver = webdriver.Chrome(options=chrome_options)
     
