@@ -13,9 +13,13 @@ from concurrent.futures import ThreadPoolExecutor
 
 #%% Aller sur Amazon et chercher le mot clés voulu et on récupère le code entier de la page
 def scrap(mot_cles):
-    
+    # Configurer les options de Chrome
     chrome_options = Options()
-    
+    chrome_options.add_argument("--headless")  # Exécution sans interface graphique
+    chrome_options.add_argument("--disable-gpu")  # Nécessaire pour certains environnements
+    chrome_options.add_argument("--no-sandbox")  # Pour les environnements restreints
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Empêche les problèmes de mémoire partagée
+
     # Initialiser le driver avec les options configurées
     driver = webdriver.Chrome(options=chrome_options)
     
@@ -36,9 +40,12 @@ def scrap(mot_cles):
         
         # Récupérer le HTML
         page_source = driver.page_source
-    finally:
-        driver.quit()  # Toujours fermer le driver, même en cas d'erreur
     
+    finally:
+        # Toujours fermer le driver, même en cas d'erreur
+        driver.quit()
+    
+    # Retourner la page analysée avec BeautifulSoup
     return BeautifulSoup(page_source, 'html.parser')
 
 #%% Récupérer les liens qui renvoit vers les produits et stocker dans une liste
