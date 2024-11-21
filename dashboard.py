@@ -41,16 +41,17 @@ if mot_cles and mot_cles != '...':
             st.dataframe(df_sellers)
 
             # Bouton pour télécharger les données
-            csv = df_sellers.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                "Télécharger les données",
-                csv,
-                "vendeurs_marketplace.csv",
-                "text/csv",
-                key='download-csv'
-            )
+            try:
+                csv = df_sellers.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    "Télécharger les données",
+                    csv,
+                    "vendeurs_marketplace.csv",
+                    "text/csv",
+                    key='download-csv'
+                )
+            except Exception as e:
+                st.error(f"Une erreur s'est produite pendant le téléchargement : {e}")
 
-        except Exception as e:
-            st.error(f"Une erreur s'est produite : {e}")
 else:
     st.info("Veuillez entrer un mot-clé pour commencer.")
