@@ -85,4 +85,6 @@ wcwidth==0.2.13
 websocket-client==1.8.0
 wordcloud==1.9.4
 wsproto==1.2.0
-selenium==4.11.2
+selenium==4.26.1
+webdriver-manager==3.8.6
+

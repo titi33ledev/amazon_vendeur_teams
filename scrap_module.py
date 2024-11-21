@@ -1,10 +1,11 @@
 #%% Initialisation du code
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
@@ -17,38 +18,35 @@ def scrap(mot_cles):
     # Configurer les options de Chrome
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Exécution sans interface graphique
-    chrome_options.add_argument("--disable-gpu")  # Nécessaire pour certains environnements
-    chrome_options.add_argument("--no-sandbox")  # Pour les environnements restreints
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Empêche les problèmes de mémoire partagée
-    
-    # Spécifier l'emplacement de Chromium
-    chrome_options.binary_location = '/usr/bin/chromium-browser'
-    
-    # Initialiser le driver avec les options configurées
-    driver = webdriver.Chrome(options=chrome_options)
-    
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Initialiser le driver avec webdriver_manager
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
     try:
         # Naviguer vers Amazon
         driver.get("https://www.amazon.fr/")
-        
+
         # Accepter les cookies
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="sp-cc-accept"]'))).click()
-        
+
         # Effectuer la recherche
         search_bar = driver.find_element(By.XPATH, '//*[@id="twotabsearchtextbox"]')
         search_bar.send_keys(mot_cles)
         search_bar.send_keys(Keys.RETURN)
-        
+
         # Attendre le chargement des résultats
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "s-main-slot")))
-        
+
         # Récupérer le HTML
         page_source = driver.page_source
-    
+
     finally:
-        # Toujours fermer le driver, même en cas d'erreur
-        driver.quit()
-    
+        driver.quit()  # Toujours fermer le driver, même en cas d'erreur
+
     # Retourner la page analysée avec BeautifulSoup
     return BeautifulSoup(page_source, 'html.parser')
 
