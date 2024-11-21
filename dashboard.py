@@ -53,5 +53,8 @@ if mot_cles and mot_cles != '...':
             except Exception as e:
                 st.error(f"Une erreur s'est produite pendant le téléchargement : {e}")
 
+        except Exception as e:
+            st.error(f"Une erreur s'est produite : {e}")
+
 else:
     st.info("Veuillez entrer un mot-clé pour commencer.")
