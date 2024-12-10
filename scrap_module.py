@@ -10,7 +10,7 @@ import pandas as pd
 import time
 import requests
 from concurrent.futures import ThreadPoolExecutor
-
+ 
 #%% Aller sur Amazon et chercher le mot clés voulu et on récupère le code entier de la page
 def scrap(mot_cles):
     
