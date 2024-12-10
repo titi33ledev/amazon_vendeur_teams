@@ -61,6 +61,7 @@ if mot_cles and mot_cles != '...':
             # Étape 4 : Extraire les informations des vendeurs
             st.info("Récupération des informations des vendeurs...")
             seller_data = extract_seller_data(seller_links, limit=50)
+            print(f"Liens sellers trouvées : {seller_data}")
             if not seller_data:
                 st.warning("Aucune information vendeur trouvée.")
                 st.stop()
