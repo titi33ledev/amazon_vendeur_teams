@@ -119,8 +119,6 @@ def fetch_search_page(url, good_proxies=None):
 
     return None
 
-
-
 # %% Extraire les liens vers les produits
 def extract_product_links(soup):
     product_links = []
@@ -166,7 +164,7 @@ def extract_seller_profile_links_fast_no_proxy(product_links):
     return seller_links
 
 # %% Extraire les informations des vendeurs
-def extract_seller_data(seller_links, limit=50):
+def extract_seller_data(seller_links, limit=100):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
     }
@@ -222,9 +220,6 @@ def extract_seller_data(seller_links, limit=50):
             progress.update(1)
 
     print(f"Extraction terminée : {len(all_seller_data)} vendeurs extraits.")
-    return all_seller_data
-
-
     return all_seller_data
 
 #%%
