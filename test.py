@@ -164,63 +164,62 @@ def extract_seller_profile_links_fast_no_proxy(product_links):
     return seller_links
 
 # %% Extraire les informations des vendeurs
-def extract_seller_data(seller_links, limit=100):
+def extract_seller_data(seller_links, limit=50):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
     }
 
     all_seller_data = []
+    st.write(f"Total seller links reçus : {len(seller_links)}")
 
-    # Ajouter une barre de progression pour les vendeurs
-    with tqdm(total=min(len(seller_links), limit), desc="Extraction des données vendeurs", unit="vendeur") as progress:
-        for idx, link in enumerate(seller_links):
-            if idx >= limit:
-                break
+    for idx, link in enumerate(seller_links):
+        if idx >= limit:
+            break
 
-            try:
-                # Faire une requête directe sans proxy
-                response = requests.get(link, headers=headers, timeout=10)
-                print(f"Requête envoyée pour le lien vendeur : {link}. Code statut : {response.status_code}")
+        try:
+            # Faire une requête directe sans proxy
+            st.write(f"Requête en cours pour le lien vendeur : {link}")
+            response = requests.get(link, headers=headers, timeout=10)
+            st.write(f"Code statut pour {link} : {response.status_code}")
 
-                if response.status_code == 200:
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    
-                    # Rechercher la section avec les informations du vendeur
-                    seller_info_section = soup.find("div", id="page-section-detail-seller-info")
-                    if not seller_info_section:
-                        print(f"Aucune information vendeur trouvée pour {link}")
-                        progress.update(1)
-                        continue
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                st.write(f"Soup récupérée pour {link}.")
 
-                    # Extraire les données
-                    data = {}
-                    rows = seller_info_section.find_all("div", class_="a-row a-spacing-none")
-                    for row in rows:
-                        bold_text = row.find("span", class_="a-text-bold")
-                        if bold_text:
-                            key = bold_text.text.strip().rstrip(":")
-                            value_span = bold_text.find_next_sibling("span")
-                            value = value_span.text.strip() if value_span else None
-                            data[key] = value
-                    
-                    # Extraire l'adresse commerciale si disponible
-                    address = seller_info_section.find_all("div", class_="indent-left")
-                    data["Adresse commerciale"] = " ".join([line.text.strip() for line in address]) if address else None
-                    
-                    # Ajouter l'URL du vendeur
-                    data["URL vendeur"] = link
-                    all_seller_data.append(data)
+                # Rechercher la section avec les informations du vendeur
+                seller_info_section = soup.find("div", id="page-section-detail-seller-info")
+                if not seller_info_section:
+                    st.write(f"Aucune information vendeur trouvée pour {link}")
+                    continue
 
-                else:
-                    print(f"Erreur lors de la requête pour {link}, code {response.status_code}")
-            except Exception as e:
-                print(f"Erreur lors de la requête pour {link}: {e}")
-            
-            # Mettre à jour la barre de progression
-            progress.update(1)
+                # Extraire les données
+                data = {}
+                rows = seller_info_section.find_all("div", class_="a-row a-spacing-none")
+                for row in rows:
+                    bold_text = row.find("span", class_="a-text-bold")
+                    if bold_text:
+                        key = bold_text.text.strip().rstrip(":")
+                        value_span = bold_text.find_next_sibling("span")
+                        value = value_span.text.strip() if value_span else None
+                        data[key] = value
 
-    print(f"Extraction terminée : {len(all_seller_data)} vendeurs extraits.")
-    return all_seller_data
+                # Extraire l'adresse commerciale si disponible
+                address = seller_info_section.find_all("div", class_="indent-left")
+                data["Adresse commerciale"] = " ".join([line.text.strip() for line in address]) if address else None
+
+                # Ajouter l'URL du vendeur
+                data["URL vendeur"] = link
+                all_seller_data.append(data)
+                st.write(f"Données extraites pour {link} : {data}")
+
+            else:
+                st.write(f"Erreur lors de la requête pour {link}, code {response.status_code}")
+
+        except Exception as e:
+            st.write(f"Erreur lors de la requête pour {link} : {e}")
+
+    st.write(f"Extraction terminée. Total vendeurs extraits : {len(all_seller_data)}")
+    return all_seller_data 
 
 #%%
 def create_dataframe(seller_data):
