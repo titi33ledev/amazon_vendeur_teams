@@ -54,7 +54,6 @@ if mot_cles and mot_cles != '...':
             # Étape 3 : Extraire les liens des boutiques des vendeurs
             st.info("Extraction des liens des boutiques des vendeurs...")
             seller_links = extract_seller_profile_links_fast_no_proxy(product_links)
-            st.write(f"Liens téléchargés : {seller_links}")
             if not seller_links:
                 st.warning("Aucun vendeur trouvé pour ces produits.")
                 st.stop()
