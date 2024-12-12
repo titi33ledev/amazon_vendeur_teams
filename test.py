@@ -164,7 +164,7 @@ def extract_seller_profile_links_fast_no_proxy(product_links):
     return seller_links
 
 # %% Extraire les informations des vendeurs
-def extract_seller_data(seller_links, limit=50):
+def extract_seller_data(seller_links, proxies, limit=50):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
     }
@@ -175,43 +175,45 @@ def extract_seller_data(seller_links, limit=50):
         if idx >= limit:
             break
 
-        try:
-            # Faire une requête directe sans proxy
-            response = requests.get(link, headers=headers, timeout=10)
-            print(f"Requête envoyée pour le lien vendeur : {link}. Code statut : {response.status_code}")
+        for proxy in proxies:
+            try:
+                # Faire une requête avec un proxy
+                response = requests.get(link, headers=headers, proxies={"http": proxy, "https": proxy}, timeout=10)
+                print(f"Requête envoyée pour le lien vendeur : {link} avec proxy {proxy}. Code statut : {response.status_code}")
 
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
+                if response.status_code == 200:
+                    soup = BeautifulSoup(response.text, 'html.parser')
 
-                # Rechercher la section avec les informations du vendeur
-                seller_info_section = soup.find("div", id="page-section-detail-seller-info")
-                if not seller_info_section:
-                    print(f"Aucune information vendeur trouvée pour {link}")
-                    continue
+                    # Rechercher la section avec les informations du vendeur
+                    seller_info_section = soup.find("div", id="page-section-detail-seller-info")
+                    if not seller_info_section:
+                        print(f"Aucune information vendeur trouvée pour {link}")
+                        break
 
-                # Extraire les données
-                data = {}
-                rows = seller_info_section.find_all("div", class_="a-row a-spacing-none")
-                for row in rows:
-                    bold_text = row.find("span", class_="a-text-bold")
-                    if bold_text:
-                        key = bold_text.text.strip().rstrip(":")
-                        value_span = bold_text.find_next_sibling("span")
-                        value = value_span.text.strip() if value_span else None
-                        data[key] = value
+                    # Extraire les données
+                    data = {}
+                    rows = seller_info_section.find_all("div", class_="a-row a-spacing-none")
+                    for row in rows:
+                        bold_text = row.find("span", class_="a-text-bold")
+                        if bold_text:
+                            key = bold_text.text.strip().rstrip(":")
+                            value_span = bold_text.find_next_sibling("span")
+                            value = value_span.text.strip() if value_span else None
+                            data[key] = value
 
-                # Extraire l'adresse commerciale si disponible
-                address = seller_info_section.find_all("div", class_="indent-left")
-                data["Adresse commerciale"] = " ".join([line.text.strip() for line in address]) if address else None
+                    # Extraire l'adresse commerciale si disponible
+                    address = seller_info_section.find_all("div", class_="indent-left")
+                    data["Adresse commerciale"] = " ".join([line.text.strip() for line in address]) if address else None
 
-                # Ajouter l'URL du vendeur
-                data["URL vendeur"] = link
-                all_seller_data.append(data)
+                    # Ajouter l'URL du vendeur
+                    data["URL vendeur"] = link
+                    all_seller_data.append(data)
+                    break  # Sortir de la boucle des proxys si la requête a réussi
 
-            else:
-                print(f"Erreur lors de la requête pour {link}, code {response.status_code}")
-        except Exception as e:
-            print(f"Erreur lors de la requête pour {link}: {e}")
+                else:
+                    print(f"Erreur lors de la requête pour {link} avec proxy {proxy}, code {response.status_code}")
+            except Exception as e:
+                print(f"Erreur lors de la requête pour {link} avec proxy {proxy}: {e}")
 
     print(f"Extraction terminée : {len(all_seller_data)} vendeurs extraits.")
     return all_seller_data
