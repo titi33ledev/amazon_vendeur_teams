@@ -60,15 +60,15 @@ if mot_cles and mot_cles != '...':
 
             # Étape 4 : Extraire les informations des vendeurs
             st.info("Récupération des informations des vendeurs...")
-            all_seller_data = extract_seller_data(seller_links, limit=50)
-            st.write(f"Liens extrait : {all_seller_data}")
-            if not all_seller_data:
+            seller_data = extract_seller_data(seller_links, limit=50)
+            st.write(extract_seller_data(seller_links, limit=50))
+            if not seller_data:
                 st.warning("Aucune information vendeur trouvée.")
                 st.stop()
 
             # Étape 5 : Créer un DataFrame
             st.info("Création du tableau des résultats...")
-            df_sellers = create_dataframe(all_seller_data)
+            df_sellers = create_dataframe(seller_data)
             if df_sellers.empty:
                 st.warning("Aucune donnée disponible pour créer le tableau.")
                 st.stop()
