@@ -1,5 +1,5 @@
 import streamlit as st
-from test import check_proxies, fetch_search_page, extract_product_links, extract_seller_profile_links_fast_no_proxy, extract_seller_data, create_dataframe, https_proxy
+from amazon_scrap import check_proxies, fetch_search_page, extract_product_links, extract_seller_profile_links_fast_no_proxy, extract_seller_data, create_dataframe, https_proxy
 
 # Déclarez la variable globale avant de l'utiliser
 good_proxies = None
@@ -60,7 +60,7 @@ if mot_cles and mot_cles != '...':
 
             # Étape 4 : Extraire les informations des vendeurs
             st.info("Récupération des informations des vendeurs...")
-            seller_data = extract_seller_data(seller_links, limit=50)
+            seller_data = extract_seller_data(seller_links,proxies,limit=50)
             if not seller_data:
                 st.warning("Aucune information vendeur trouvée.")
                 st.stop()
