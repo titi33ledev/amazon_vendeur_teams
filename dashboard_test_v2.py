@@ -1,5 +1,5 @@
 import streamlit as st
-from test import check_proxies, fetch_search_page, extract_product_links, extract_seller_profile_links_fast_no_proxy, extract_seller_data, create_dataframe, https_proxy
+from amazon_scrap_v1 import check_proxies, fetch_search_page, extract_product_links, extract_seller_profile_links_fast_no_proxy, extract_seller_data, create_dataframe, https_proxy
 
 # Déclarez la variable globale avant de l'utiliser
 good_proxies = None
