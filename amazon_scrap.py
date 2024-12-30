@@ -170,14 +170,20 @@ def extract_seller_data(seller_links, proxies, limit=50):
     }
 
     all_seller_data = []
+    max_retries = 2  # Nombre maximum de tentatives par lien vendeur
 
     for idx, link in enumerate(seller_links):
         if idx >= limit:
             break
 
-        for proxy in proxies:
+        retries = 0
+        while retries < max_retries:
+            if not proxies:
+                print("Plus de proxies disponibles. Arrêt de l'extraction.")
+                return all_seller_data
+
+            proxy = random.choice(proxies)
             try:
-                # Faire une requête avec un proxy
                 response = requests.get(link, headers=headers, proxies={"http": proxy, "https": proxy}, timeout=10)
                 print(f"Requête envoyée pour le lien vendeur : {link} avec proxy {proxy}. Code statut : {response.status_code}")
 
@@ -212,12 +218,19 @@ def extract_seller_data(seller_links, proxies, limit=50):
 
                 else:
                     print(f"Erreur lors de la requête pour {link} avec proxy {proxy}, code {response.status_code}")
+                    proxies.remove(proxy)
+
             except Exception as e:
                 print(f"Erreur lors de la requête pour {link} avec proxy {proxy}: {e}")
+                proxies.remove(proxy)
+
+            retries += 1
+
+        if retries == max_retries:
+            print(f"Échec après {max_retries} tentatives pour le lien : {link}")
 
     print(f"Extraction terminée : {len(all_seller_data)} vendeurs extraits.")
     return all_seller_data
-
 
 #%%
 def create_dataframe(seller_data):
